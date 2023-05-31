@@ -1,23 +1,37 @@
 import React from "react";
-import Produto from "./components/Produto.jsx";
-import {GlobalStorage} from "./Context/GlobalContext.jsx";
-import LimparDados from "./components/LimparDados.jsx";
+import useLocalStorage from "./Hooks/useLocalStorage.jsx";
+import useFetch from "./Hooks/useFetch.jsx";
 
-// Utilize o GlobalContext do exemplo anterior para puxar os dados da API abaixo:
-// https://ranekapi.origamid.dev/json/api/produto/
-// assim que o usuário acessar o app
-// coloque os dados da API no contexto global, dando acesso aos dados da mesma
-// defina uma função chamada limparDados que é responsável por zerar os dados de produto
-// e exponha essa função no contexto global
 
 const App = () => {
+    const [produto, setProduto] = useLocalStorage('produto', '');
+    const {request, data, loading, error} = useFetch();
 
-    return (<div>
-        <GlobalStorage>
-            <Produto/>
-            <LimparDados/>
-        </GlobalStorage>
-    </div>)
+    React.useEffect(() => {
+        async function fetchData() {
+            const {response, json} = await request('https://ranekapi.origamid.dev/json/api/produto/')
+            console.log(response)
+            console.log(json)
+        }
+        fetchData();
+    }, [request]);
+
+    function handleClick({target}) {
+        setProduto(target.innerText);
+    }
+
+    if (loading) return <p>CARREGANDO...</p>;
+    if (error) return <h1>ERROR</h1>;
+    if (data)
+        return (<div>
+            <button onClick={handleClick}>notebook</button>
+            <button onClick={handleClick}>smartphone</button>
+            <hr/>
+            {data.map((produto) => (
+                <li key={produto.id}>{produto.nome}</li>
+            ))}
+        </div>)
+    else return null;
 }
 
 export default App;
