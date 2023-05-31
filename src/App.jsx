@@ -1,43 +1,23 @@
 import React from "react";
 import Produto from "./components/Produto.jsx";
+import {GlobalStorage} from "./Context/GlobalContext.jsx";
+import LimparDados from "./components/LimparDados.jsx";
 
-// Quando o usuário clicar em um dos botões, faça um fetch do produto clicado utilizando a api abaixo
-// https://ranekapi.origamid.dev/json/api/produto/notebook
-// https://ranekapi.origamid.dev/json/api/produto/smartphone
-// Mostre o nome e preço na tela (separe essa informação em um componente Produto.js)
-// Defina o produto clicado como uma preferência do usuário no localStorage
-// Quando o usuário entrar no site, se existe um produto no localStorage, faça o fetch do mesmo
-
+// Utilize o GlobalContext do exemplo anterior para puxar os dados da API abaixo:
+// https://ranekapi.origamid.dev/json/api/produto/
+// assim que o usuário acessar o app
+// coloque os dados da API no contexto global, dando acesso aos dados da mesma
+// defina uma função chamada limparDados que é responsável por zerar os dados de produto
+// e exponha essa função no contexto global
 
 const App = () => {
-    const [dados, setDados] = React.useState([]);
 
-    function handleClick(event) {
-        fetch(`https://ranekapi.origamid.dev/json/api/produto/${event.target.innerText}`)
-            .then(response => response.json()
-                .then(json => {
-                    setDados(json)
-                }))
-        localStorage.setItem("item", `${event.target.innerText}`);
-    }
-
-    React.useEffect(() => {
-        const localStorageData = localStorage.getItem("item")
-        if (localStorageData) {
-            fetch(`https://ranekapi.origamid.dev/json/api/produto/${localStorageData}`)
-                .then(response => response.json()
-                    .then(json => {
-                        setDados(json)
-                    }))
-        }
-
-    }, []);
-
-    return (<>{dados && (<div><h1>{dados.nome}</h1></div>)}
-        <button style={{margin: "0.5rem"}} onClick={handleClick}>smartphone</button>
-        <button style={{margin: "0.5rem"}} onClick={handleClick}>notebook</button>
-        <Produto dados={dados}/>
-    </>)
+    return (<div>
+        <GlobalStorage>
+            <Produto/>
+            <LimparDados/>
+        </GlobalStorage>
+    </div>)
 }
 
 export default App;

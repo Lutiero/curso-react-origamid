@@ -1,12 +1,18 @@
 import React from 'react';
+import { GlobalContext } from "../Context/GlobalContext.jsx";
 
-const Produto = ({dados}) => {
-    return (<>{dados && (<div><h2>{dados.nome}</h2></div>)}
-        {dados && (<div>
-            <div>{dados.preco}</div>
-            <div>{dados.descricao}</div>
-        </div>)}
-    </>)
+const Produto = () => {
+    const {dados} = React.useContext(GlobalContext);
+
+    return (
+        <div>
+            <ul>
+                {dados && dados.map((produto) => (
+                    <li key={produto.id}>{produto.nome}</li>
+                ))}
+            </ul>
+        </div>
+    );
 };
 
 export default Produto;
