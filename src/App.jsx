@@ -1,53 +1,94 @@
 import React from "react";
-import Input from "./Form/Input.jsx";
-import useForm from "./Hooks/useForm.jsx";
+import Radio from "./Form/Radio.jsx";
 
+const perguntas = [
+    {
+        pergunta: 'Qual método é utilizado para criar componentes?',
+        options: [
+            'React.makeComponent()',
+            'React.createComponent()',
+            'React.createElement()',
+        ],
+        resposta: 'React.createElement()',
+        id: 'p1',
+    },
+    {
+        pergunta: 'Como importamos um componente externo?',
+        options: [
+            'import Component from "./Component"',
+            'require("./Component")',
+            'import "./Component"',
+        ],
+        resposta: 'import Component from "./Component"',
+        id: 'p2',
+    },
+    {
+        pergunta: 'Qual hook não é nativo?',
+        options: ['useEffect()', 'useFetch()', 'useCallback()'],
+        resposta: 'useFetch()',
+        id: 'p3',
+    },
+    {
+        pergunta: 'Qual palavra deve ser utilizada para criarmos um hook?',
+        options: ['set', 'get', 'use'],
+        resposta: 'use',
+        id: 'p4',
+    },
+];
 const App = () => {
-  const nome = useForm();
-  const sobrenome = useForm(false);
-  const cep = useForm('cep');
-  const email = useForm('email');
+    const [respostas, setRespostas] = React.useState({
+        p1: '',
+        p2: '',
+        p3: '',
+        p4: ''
+    });
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    (nome.validate() & cep.validate() & email.validate()) ? console.log('enviou') : console.log('não enviou');
-  }
+    const [slide, setSlide] = React.useState(0);
+    const [resultado, setResultado] = React.useState(null)
 
-  return (<>
-    <form onSubmit={handleSubmit}>
-      <Input
-          type="text"
-          id="nome"
-          label="Nome"
-          value={nome.value}
-          {...nome}
-      />
-      <Input
-          type="text"
-          id="sobrenome"
-          label="Sobrenome"
-          value={sobrenome.value}
-          {...sobrenome}
-      />
-      <Input
-        type="text"
-        id="cep"
-        label="CEP"
-        placeholder="00000-000"
-        value={cep.value}
-        {...cep}
-      />
-      <Input
-        type="email"
-        id="email"
-        label="email"
-        placeholder="fulano@ciclano.com"
-        value={email.value}
-        {...email}
-      />
-      <button>Enviar</button>
-    </form>
-  </>)
+    function handleChange({target}) {
+        setRespostas({...respostas, [target.id]: target.value})
+    }
+
+    function resultadoFinal() {
+        const corretas = perguntas.filter(
+            ({resposta, id}) => {
+                return respostas[id] === resposta;
+            });
+        setResultado(`Você acertou: ${corretas.length} / ${perguntas.length}`);
+    }
+
+    function handleClick(event) {
+        event.preventDefault();
+        if (slide < perguntas.length - 1) {
+            setSlide(slide + 1);
+        } else {
+            resultadoFinal();
+            setSlide(slide + 1);
+
+        }
+    }
+
+    return (<>
+        <form>
+            {perguntas.map((pergunta, index) => (
+                <Radio
+                    {...pergunta}
+                    value={respostas[pergunta.id]}
+                    onChange={handleChange}
+                    key={pergunta.id}
+                    active={slide === index}
+                />
+            ))}
+            {resultado ? resultado :
+                <button
+                    style={{marginTop: ".5rem"}}
+                    onClick={handleClick}>
+                    {slide < 3 ? "Próxima" : "Finalizar"}
+                </button>
+            }
+        </form>
+    </>)
 
 }
 
