@@ -1,53 +1,53 @@
 import React from "react";
 import Input from "./Form/Input.jsx";
+import useForm from "./Hooks/useForm.jsx";
 
 const App = () => {
-    const [cep, setCep] = React.useState('');
-    const [error, setError] = React.useState(null);
+  const nome = useForm();
+  const sobrenome = useForm(false);
+  const cep = useForm('cep');
+  const email = useForm('email');
 
-    function validate(value) {
+  function handleSubmit(event) {
+    event.preventDefault();
+    (nome.validate() & cep.validate() & email.validate()) ? console.log('enviou') : console.log('não enviou');
+  }
 
-        if(!value.length){
-            setError('Preencha com algum valor');
-            return false;
-        } else if(!/^\d{5}-?\d{3}$/.test(value)) {
-            setError('Preencha com um campo válido');
-            return false;
-        } else {
-            setError(null);
-            return true;
-        }
-    }
-    function handleBlur({target}) {
-        validate(target.value);
-    }
-
-    function handleChange({target}) {
-        if (error) validate(target.value);
-        setCep(target.value);
-    }
-
-    function handleSubmit(event) {
-        event.preventDefault();
-        validate(cep) ? console.log('enviou') : console.log('não enviou');
-    }
-
-    return (<>
-        <form onSubmit={handleSubmit}>
-        <Input
-            type="text"
-            id="cep"
-            label="CEP"
-            placeholder="00000-000"
-            value={cep}
-            onChange={handleChange}
-            onBlur={handleBlur}
-        />
-            <button>Enviar</button>
-        </form>
-        {cep}
-        {error && <p>{error}</p>}
-    </>)
+  return (<>
+    <form onSubmit={handleSubmit}>
+      <Input
+          type="text"
+          id="nome"
+          label="Nome"
+          value={nome.value}
+          {...nome}
+      />
+      <Input
+          type="text"
+          id="sobrenome"
+          label="Sobrenome"
+          value={sobrenome.value}
+          {...sobrenome}
+      />
+      <Input
+        type="text"
+        id="cep"
+        label="CEP"
+        placeholder="00000-000"
+        value={cep.value}
+        {...cep}
+      />
+      <Input
+        type="email"
+        id="email"
+        label="email"
+        placeholder="fulano@ciclano.com"
+        value={email.value}
+        {...email}
+      />
+      <button>Enviar</button>
+    </form>
+  </>)
 
 }
 
