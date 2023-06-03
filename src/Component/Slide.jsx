@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Slide.module.css'
+import {act} from "react-dom/test-utils";
 
 const Slide = ({slides}) => {
 
@@ -7,16 +8,18 @@ const Slide = ({slides}) => {
     const [position, setPosition] = React.useState(0);
     const contentRef = React.useRef();
 
-    function slidePrevious() {
+    React.useEffect(() => {
         const {width} = contentRef.current.getBoundingClientRect();
-        setPosition(position + width);
-        console.log(contentRef.current.getBoundingClientRect())
+        setPosition( -(width * active));
+    }, [active])
+    function slidePrevious() {
+        if(active < 1) return
+        setActive(active - 1);
     }
 
     function slideNext(){
-        const {width} = contentRef.current.getBoundingClientRect();
-        setPosition(position - width);
-        console.log(contentRef.current.getBoundingClientRect())
+        if(active >= slides.length - 1) return
+        setActive(active + 1);
 
     }
 
